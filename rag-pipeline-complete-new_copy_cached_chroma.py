@@ -5395,7 +5395,7 @@ def main():
     """, unsafe_allow_html=True)
 
     # Display Kapital Bank logo using direct image
-    st.image("kb_logo.jpg", width=300)  # Make sure to have kb_logo.png in your project directory
+    st.image("kb_logo.png", width=300)  # Make sure to have kb_logo.png in your project directory
 
     st.title("HR Assistant")
     st.markdown("""
