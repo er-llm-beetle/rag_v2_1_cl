@@ -347,7 +347,7 @@ class MilvusStorageManager:
         try:
             # Check if docker-compose file exists
             if not os.path.exists(self.docker_compose_file):
-                self.logger.info("Downloading Milvus docker-compose file...")
+                # self.logger.info("Downloading Milvus docker-compose file...")
                 url = "https://github.com/milvus-io/milvus/releases/download/v2.3.3/milvus-standalone-docker-compose.yml"
                 import requests
                 response = requests.get(url)
@@ -410,7 +410,7 @@ class MilvusStorageManager:
                     
                 try:
                     utility.drop_collection(coll['name'])
-                    self.logger.info(f"Dropped collection: {coll['name']}")
+                    # self.logger.info(f"Dropped collection: {coll['name']}")
                     free_space, _ = self.check_storage_space()
                 except:
                     continue
@@ -511,7 +511,7 @@ class MilvusHealthManager:
         try:
             # Check if docker-compose file exists
             if not os.path.exists(self.docker_compose_path):
-                self.logger.info("Downloading Milvus docker-compose file...")
+                # self.logger.info("Downloading Milvus docker-compose file...")
                 url = "https://github.com/milvus-io/milvus/releases/download/v2.3.3/milvus-standalone-docker-compose.yml"
                 subprocess.run(['wget', url, '-O', self.docker_compose_path], check=True)
 
@@ -522,7 +522,7 @@ class MilvusHealthManager:
             for _ in range(30):  # Wait up to 30 seconds
                 running, _ = self.check_milvus_container()
                 if running:
-                    self.logger.info("Milvus container started successfully")
+                    # self.logger.info("Milvus container started successfully")
                     time.sleep(5)  # Additional wait for service readiness
                     # time.sleep(10)  # Additional wait for service readiness
                     return True
@@ -553,10 +553,10 @@ class MilvusHealthManager:
         
         if not running:
             if "Exited" in status:
-                self.logger.info("Milvus container found but not running. Attempting restart...")
+                # self.logger.info("Milvus container found but not running. Attempting restart...")
                 return self.restart_milvus()
             else:
-                self.logger.info("Milvus container not found. Attempting to start...")
+                # self.logger.info("Milvus container not found. Attempting to start...")
                 return self.start_milvus()
                 
         return True
@@ -605,7 +605,7 @@ class MilvusConnectionManager:
                 # Test connection
                 utility.list_collections()
                 
-                self.logger.info(f"Successfully connected to Milvus at {self.host}:{self.port}") ## check it
+                # self.logger.info(f"Successfully connected to Milvus at {self.host}:{self.port}") ## check it
                 return True
 
             except Exception as e:
@@ -1241,11 +1241,11 @@ class ModelCache:
         
         try:
             if cache_path.exists():
-                logger.info(f"Loading model from cache: {cache_path}")
+                # logger.info(f"Loading model from cache: {cache_path}")
                 model = SentenceTransformer(model_name, device=device)
                 model.load_state_dict(torch.load(cache_path, map_location=device))
             else:
-                logger.info(f"Loading model from scratch: {model_name}")
+                # logger.info(f"Loading model from scratch: {model_name}")
                 model = SentenceTransformer(model_name, device=device)
                 torch.save(model.state_dict(), cache_path)
             
@@ -1901,7 +1901,7 @@ class MilvusVectorStore:
             # Drop existing collection if needed
             if self.collection_name in existing_collections:
                 utility.drop_collection(self.collection_name)
-                logger.info(f"Dropped existing collection: {self.collection_name}") ## check it to remove
+                # logger.info(f"Dropped existing collection: {self.collection_name}") ## check it to remove
             
             # Create fields
             fields = [
@@ -1922,7 +1922,7 @@ class MilvusVectorStore:
                 schema=schema,
                 using='default'
             )
-            logger.info(f"Created new collection: {self.collection_name}")
+            # logger.info(f"Created new collection: {self.collection_name}")
             
             # Create index
             index_params = {
@@ -1935,7 +1935,7 @@ class MilvusVectorStore:
                 field_name="embeddings",
                 index_params=index_params
             )
-            logger.info("Created index on embeddings field")
+            # logger.info("Created index on embeddings field")
             
         except Exception as e:
             logger.error(f"Failed to create collection: {str(e)}")
@@ -1972,7 +1972,7 @@ class MilvusVectorStore:
             processed_metadata = []
             processed_embeddings = []
             
-            logger.info(f"Processing {len(texts)} documents for insertion")
+            # logger.info(f"Processing {len(texts)} documents for insertion")
             
             # Process each document
             for i, (text, embedding, meta) in enumerate(zip(texts, embeddings, metadata)):
@@ -2007,7 +2007,7 @@ class MilvusVectorStore:
                 end_idx = min(i + batch_size, len(processed_texts))
                 batch_num = i // batch_size + 1
                 
-                logger.info(f"Inserting batch {batch_num}/{total_batches}")
+                # logger.info(f"Inserting batch {batch_num}/{total_batches}")
                 
                 batch_data = [
                     processed_texts[i:end_idx],
@@ -2039,7 +2039,7 @@ class MilvusVectorStore:
                         # self.collection.flush()
                         self.collection.flush(async_flush=True)
                         
-                        logger.info(f"Successfully inserted batch {batch_num}/{total_batches}")
+                        # logger.info(f"Successfully inserted batch {batch_num}/{total_batches}")
                         success = True
                         break
                         
@@ -2050,14 +2050,14 @@ class MilvusVectorStore:
                 if not success:
                     raise RuntimeError(f"Failed to insert batch {batch_num} after all retries")
             
-            logger.info("Successfully completed all insertions")
+            # logger.info("Successfully completed all insertions")
       
 # 
             # Ensure index exists
             try:
                 print('connect.......')
                 if not self.collection.has_index():
-                    logger.info("Creating index as it doesn't exist")
+                    # logger.info("Creating index as it doesn't exist")
                     self.collection.create_index(
                         field_name="embeddings",
                         index_params={
@@ -2069,7 +2069,7 @@ class MilvusVectorStore:
             except Exception as e:
                 logger.warning(f"Index check/creation warning: {str(e)}")
             
-            logger.info("Successfully completed insertion")
+            # logger.info("Successfully completed insertion")
             
         except Exception as e:
             logger.error(f"Insert operation failed: {str(e)}")
@@ -2100,12 +2100,12 @@ class MilvusVectorStore:
     ) -> List[Dict]:
         """Perform hybrid search with error handling"""
         try:
-            logger.info("Starting hybrid search")
+            # logger.info("Starting hybrid search")
             
             # Load collection
             try:
                 self.collection.load()
-                logger.info("Collection loaded successfully")
+                # logger.info("Collection loaded successfully")
             except Exception as e:
                 logger.warning(f"Collection load warning (continuing anyway): {str(e)}")
             
@@ -2130,7 +2130,7 @@ class MilvusVectorStore:
                 round_decimal=-1  # Disable score rounding for speed
             )
             
-            logger.info(f"Found {len(search_results[0])} search results")
+            # logger.info(f"Found {len(search_results[0])} search results")
             
             # Process results
             for hits in search_results:
@@ -2170,7 +2170,7 @@ class MilvusVectorStore:
                         logger.warning(f"Failed to process search result: {str(e)}")
                         continue
             
-            logger.info(f"Successfully processed {len(results)} results")
+            # logger.info(f"Successfully processed {len(results)} results")
             print("\nSearch results: ", results)
             return results
             
@@ -2539,7 +2539,7 @@ class ChromaDBVectorStore:
                     ids=batch_ids
                 )
             
-            self.logger.info(f"Successfully inserted {len(texts)} documents")
+            # self.logger.info(f"Successfully inserted {len(texts)} documents")
             
         except Exception as e:
             self.logger.error(f"Insert operation failed: {str(e)}")
@@ -2761,7 +2761,7 @@ class ReRanker:
         device: str = "cuda" if torch.cuda.is_available() else "cpu"
     ):
         self.device = device
-        logger.info(f"Initializing ReRanker on device: {self.device}")
+        # logger.info(f"Initializing ReRanker on device: {self.device}")
 
         # Initialize using pipeline
         try:
@@ -2790,7 +2790,7 @@ class ReRanker:
     ) -> List[Dict]:
         """Rerank documents using pipeline scoring"""
         try:
-            logger.info(f"Reranking {len(documents)} documents")
+            # logger.info(f"Reranking {len(documents)} documents")
             reranked_docs = []
             
             for doc in documents:
@@ -2828,7 +2828,7 @@ class ReRanker:
         
             # Sort by rerank score
             reranked_docs.sort(key=lambda x: x['rerank_score'], reverse=True)
-            logger.info("Reranking completed successfully")
+            # logger.info("Reranking completed successfully")
             
             return reranked_docs
             
@@ -4314,7 +4314,7 @@ class RAGPipeline:
         ):
             try:
                 self.logger = logging.getLogger(__name__)
-                self.logger.info("Initializing RAGPipeline")
+                # self.logger.info("Initializing RAGPipeline")
                 # st.write("Starting RAGPipeline initialization...")
 
                 log_memory_usage("Starting RAGPipeline init")
@@ -4327,14 +4327,14 @@ class RAGPipeline:
                 # Create cache directory
                 self.cache_dir.mkdir(parents=True, exist_ok=True)
                 log_memory_usage("After cache directory setup")
-                self.logger.info(f"Cache directory created at {self.cache_dir}")
+                # self.logger.info(f"Cache directory created at {self.cache_dir}")
                 # st.write(f"Cache directory setup completed")
 
                 # Initialize components with status updates
                 # st.write("Initializing document processor...")
                 self.doc_processor = DocumentProcessor()
                 log_memory_usage("After document processor init")
-                self.logger.info("Document processor initialized")
+                # self.logger.info("Document processor initialized")
 
                 # st.write("Initializing chunking strategy...")
                 log_memory_usage("After chunking strategy init")
@@ -4343,15 +4343,15 @@ class RAGPipeline:
                     chunk_overlap=chunk_overlap
                 )
                 log_memory_usage("After chunk cache init")
-                self.logger.info("Chunking strategy initialized")
+                # self.logger.info("Chunking strategy initialized")
 
                 # st.write("Initializing chunk cache...")
                 self.chunk_cache = ChunkCache(cache_dir=f"{cache_dir}/chunks")
-                self.logger.info("Chunk cache initialized")
+                # self.logger.info("Chunk cache initialized")
 
                 # Initialize embedding model
                 # st.write("Initializing embedding model...")
-                self.logger.info("Loading embedding model...")
+                # self.logger.info("Loading embedding model...")
 
                 OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']
 
@@ -4417,19 +4417,19 @@ class RAGPipeline:
                     api_key=OPENAI_API_KEY
                 )
                 log_memory_usage("After embedding model init")
-                self.logger.info("Embedding model initialized")
+                # self.logger.info("Embedding model initialized")
                 # st.write("Embedding model initialized successfully")
 
                 # Initialize vector store
                 # st.write("Initializing vector store...")
-                self.logger.info("Setting up vector store...")
+                # self.logger.info("Setting up vector store...")
                 self.vector_store = ChromaDBVectorStore(
                     collection_name=collection_name,
                     embedding_dim=self.embedding_model.dimension,
                     persist_directory=f"{cache_dir}/vector_store"
                 )
                 log_memory_usage("After vector store init")
-                self.logger.info("Vector store initialized")
+                # self.logger.info("Vector store initialized")
                 # st.write("Vector store initialized successfully")
 
                 # Initialize other components
@@ -4445,7 +4445,7 @@ class RAGPipeline:
                 self.summarizer = GPTDocumentSummarizer(api_key=OPENAI_API_KEY)
                 # st.write("Initialized Summarizer components...")
                 
-                self.logger.info("All components initialized successfully")
+                # self.logger.info("All components initialized successfully")
                 # st.write("All pipeline components initialized successfully")
                 log_memory_usage("After all components initialization")
 
@@ -4461,7 +4461,7 @@ class RAGPipeline:
     ) -> Dict[str, Any]:
         """Process a document through the entire pipeline"""
         try:
-            logger.info(f"Processing document: {file_path}")
+            # logger.info(f"Processing document: {file_path}")
             
             # # 1. Read document
             # text, metadata = self.doc_processor.read_document(file_path)
@@ -4476,13 +4476,13 @@ class RAGPipeline:
             cached_chunks = self.chunk_cache.get_chunks(file_path)
 
             if cached_chunks:
-                logger.info("Using cached document chunks")
+                # logger.info("Using cached document chunks")
                 chunk_texts = [chunk['text'] for chunk in cached_chunks]
                 chunk_metadata = [chunk['metadata'] for chunk in cached_chunks]
                 num_chunks = len(cached_chunks)
             else:
                 # Process document if not cached
-                logger.info("Processing document and creating chunks")
+                # logger.info("Processing document and creating chunks")
                 text, metadata = self.doc_processor.read_document(file_path)
                 chunks = self.chunking_strategy.create_chunks(text, metadata)
                 
@@ -4519,9 +4519,9 @@ class RAGPipeline:
             embeddings = self.embedding_model.generate_embeddings(chunk_texts)
 
             # Add logging for debugging
-            self.logger.info(f"Generated {len(embeddings)} embeddings")
-            self.logger.info(f"Number of texts: {len(chunk_texts)}")
-            self.logger.info(f"Number of metadata items: {len(chunk_metadata)}")
+            # self.logger.info(f"Generated {len(embeddings)} embeddings")
+            # self.logger.info(f"Number of texts: {len(chunk_texts)}")
+            # self.logger.info(f"Number of metadata items: {len(chunk_metadata)}")
 
             # Store in vector database
             self.vector_store.insert(chunk_texts, embeddings, chunk_metadata)
@@ -4670,13 +4670,13 @@ class RAGPipeline:
 
             # Generate query variations if enabled
             if expand_queries:
-                logger.info("Generating query variations")
+                # logger.info("Generating query variations")
                 all_queries = self.question_generator.generate_questions(
                     query,
                     num_questions=1,
                     language=self.language
                 )
-                logger.info(f"Generated variations: {all_queries}")
+                # logger.info(f"Generated variations: {all_queries}")
             else:
                 all_queries = [query]
 
@@ -4729,7 +4729,7 @@ class RAGPipeline:
 
             # Rerank against original query
             if results_list:
-                self.logger.info("Reranking results")
+                # self.logger.info("Reranking results")
                 # reranked_results = self.reranker.rerank(query, results_list)
                 reranked_results = self.reranker.rerank(aze_query, results_list)
             # else:
@@ -4737,13 +4737,13 @@ class RAGPipeline:
 
 # 
             # Repack results
-            self.logger.info("Repacking results")
+            # self.logger.info("Repacking results")
             # repacked_data = self.repacker.repack_results(reranked_results, query)
             repacked_data = self.repacker.repack_results(reranked_results, aze_query)
             print('\nRepacked_data:', repacked_data)
 
             # Generate summaries
-            self.logger.info("Generating summaries")
+            # self.logger.info("Generating summaries")
             summaries = self.summarizer.summarize_results(
                 reranked_results,
                 repacked_data['context'],
@@ -5239,7 +5239,7 @@ def initialize_rag_pipeline():
             # st.write(f"Created cache directory: {subdir}")
 
         # st.write("Initializing pipeline components...")
-        logger.info("Starting pipeline initialization")
+        # logger.info("Starting pipeline initialization")
         log_memory_usage("Before initialization")
 
         # HUGGINGFACE_API_KEY = st.secrets['HUGGINGFACE_API_KEY']
@@ -5259,18 +5259,18 @@ def initialize_rag_pipeline():
         
         log_memory_usage("After creating cache directories")
         # st.write("Pipeline object created successfully")
-        logger.info("Pipeline object initialized")
+        # logger.info("Pipeline object initialized")
 
         # Process initial document with progress updates
         log_memory_usage("After pipeline initialization")
         # st.write("Processing initial document...")
-        logger.info("Starting document processing")
+        # logger.info("Starting document processing")
         
         try:
             doc_result = pipeline.process_document("formatted_combined.pdf")
             log_memory_usage("After document processing")
             # st.write("Document processing completed")
-            logger.info("Document processing finished")
+            # logger.info("Document processing finished")
             
             if doc_result['status'] != 'success':
                 error_msg = f"Error processing document: {doc_result.get('message', 'Unknown error')}"
@@ -5279,7 +5279,7 @@ def initialize_rag_pipeline():
                 return None
                 
             st.success("Pipeline initialization completed successfully!")
-            logger.info("Pipeline fully initialized")
+            # logger.info("Pipeline fully initialized")
             log_memory_usage("After complete initialization")
             return pipeline
             
@@ -5394,7 +5394,7 @@ def main():
     """, unsafe_allow_html=True)
 
     # Display Kapital Bank logo using direct image
-    st.image("kb_logo.png", width=300)  # Make sure to have kb_logo.png in your project directory
+    # st.image("kb_logo.png", width=300)  # Make sure to have kb_logo.png in your project directory
 
     st.title("HR Assistant")
     st.markdown("""
