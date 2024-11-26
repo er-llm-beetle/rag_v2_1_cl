@@ -5346,7 +5346,6 @@ def format_chat_message(message: dict) -> None:
         #     with st.expander("View Context"):
         #         st.markdown(message["context"])
 
-# [Previous imports and function definitions remain the same until main()]
 
 def main():
     # Set up Streamlit page configuration
@@ -5395,7 +5394,7 @@ def main():
     """, unsafe_allow_html=True)
 
     # Display Kapital Bank logo using direct image
-    # st.image("kb_logo.png", width=300)  # Make sure to have kb_logo.png in your project directory
+    st.image("kb_logo.png", width=300)  # Make sure to have kb_logo.png in your project directory
 
     st.title("HR Assistant")
     st.markdown("""
@@ -5429,13 +5428,8 @@ def main():
         with st.expander("View Example Q&A", expanded=True):
             st.markdown("""
             <div class="example-qa">
-                <pre class="qa-text">Q: İllik məzuniyyət neçə gündür?</pre>
-                <pre class="qa-text">A: Əsas illik məzuniyyət müddəti 21 təqvim günüdür. İş stajından və vəzifədən asılı olaraq əlavə məzuniyyət günləri də verilə bilər.</pre>
-            </div>
-            
-            <div class="example-qa">
-                <pre class="qa-text">Q: Xəstəlik vərəqəsi necə rəsmiləşdirilir?</pre>
-                <pre class="qa-text">A: Xəstəlik vərəqəsi səhiyyə müəssisəsi tərəfindən verilir və işçi tərəfindən HR departamentinə təqdim edilməlidir. Sənəd 3 iş günü ərzində təqdim edilməlidir.</pre>
+                <pre class="qa-text">Sual: Kompetensiya nədir?</pre>
+                <pre class="qa-text">Cavab: Kompetensiyalar hər hansı bir vəzifənin icrası üçün tələb olunan səriştələr toplusudur. Əməkdaşların hər hansı bir vəzifədə fəaliyyət göstərməsi və müvəffəqiyyətli olması üçün ehtiyac duyulan səriştələrdir.</pre>
             </div>
             """, unsafe_allow_html=True)
 
@@ -5504,3 +5498,171 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
+
+# ------ with logo and example
+# def main():
+#     # Set up Streamlit page configuration
+#     st.set_page_config(
+#         page_title="HR Assistant",
+#         page_icon="👩‍💼",
+#         layout="wide",
+#         initial_sidebar_state="collapsed"
+#     )
+
+#     # Apply custom CSS for better styling
+#     st.markdown("""
+#         <style>
+#         .stButton>button {
+#             width: 100%;
+#         }
+#         .chat-message {
+#             padding: 1rem;
+#             border-radius: 0.5rem;
+#             margin-bottom: 1rem;
+#         }
+#         .user-message {
+#             background-color: #f0f2f6;
+#         }
+#         .assistant-message {
+#             background-color: #e8f0fe;
+#         }
+#         .logo-img {
+#             max-width: 200px;
+#             margin: 0 auto;
+#             display: block;
+#         }
+#         .example-qa {
+#             background-color: #1E1E1E;
+#             color: white;
+#             padding: 1rem;
+#             border-radius: 0.25rem;
+#             margin: 0.5rem 0;
+#         }
+#         .qa-text {
+#             font-family: monospace;
+#             margin: 0;
+#             padding: 0.5rem;
+#         }
+#         </style>
+#     """, unsafe_allow_html=True)
+
+#     # Display Kapital Bank logo using direct image
+#     st.image("kb_logo.png", width=300)  # Make sure to have kb_logo.png in your project directory
+
+#     st.title("HR Assistant")
+#     st.markdown("""
+#     Welcome to the HR Assistant! Ask any questions about HR policies and procedures.
+#     This system uses advanced AI to provide accurate answers based on official HR documentation.
+#     """)
+
+#     # Initialize session state
+#     if 'chat_history' not in st.session_state:
+#         st.session_state.chat_history = []
+#     if 'pipeline' not in st.session_state:
+#         st.session_state.pipeline = None
+
+#     # Create two columns
+#     col1, col2 = st.columns([2, 1])
+
+#     with col1:
+#         # Initialize RAG pipeline if not already initialized
+#         if st.session_state.pipeline is None:
+#             with st.spinner("Initializing AI model (this may take a few moments)..."):
+#                 pipeline = initialize_rag_pipeline()
+#                 if pipeline:
+#                     st.session_state.pipeline = pipeline
+#                     st.success("AI model initialized successfully!")
+#                 else:
+#                     st.error("Failed to initialize AI model. Please refresh the page.")
+#                     return
+
+#         # Example Q&A Section
+#         st.markdown("### Example Questions and Answers")
+#         with st.expander("View Example Q&A", expanded=True):
+#             st.markdown("""
+#             <div class="example-qa">
+#                 <pre class="qa-text">Q: İllik məzuniyyət neçə gündür?</pre>
+#                 <pre class="qa-text">A: Əsas illik məzuniyyət müddəti 21 təqvim günüdür. İş stajından və vəzifədən asılı olaraq əlavə məzuniyyət günləri də verilə bilər.</pre>
+#             </div>
+            
+#             <div class="example-qa">
+#                 <pre class="qa-text">Q: Xəstəlik vərəqəsi necə rəsmiləşdirilir?</pre>
+#                 <pre class="qa-text">A: Xəstəlik vərəqəsi səhiyyə müəssisəsi tərəfindən verilir və işçi tərəfindən HR departamentinə təqdim edilməlidir. Sənəd 3 iş günü ərzində təqdim edilməlidir.</pre>
+#             </div>
+#             """, unsafe_allow_html=True)
+
+#         # Chat interface
+#         st.subheader("Chat")
+        
+#         # Display chat history
+#         for message in st.session_state.chat_history:
+#             format_chat_message(message)
+
+#         # Query input
+#         with st.form(key="query_form"):
+#             query = st.text_input(
+#                 "Ask a question:",
+#                 key="query_input",
+#                 placeholder="Type your question here..."
+#             )
+#             submit_button = st.form_submit_button("Send")
+
+#             if submit_button and query:
+#                 st.session_state.chat_history.append({
+#                     "role": "user",
+#                     "content": query
+#                 })
+
+#                 with st.spinner("Processing your question..."):
+#                     result = process_query(st.session_state.pipeline, query)
+
+#                 if result['status'] == 'success':
+#                     st.session_state.chat_history.append({
+#                         "role": "assistant",
+#                         "content": result['response'],
+#                         "context": result.get('context', ''),
+#                         "variations": result.get('variations', [])
+#                     })
+
+#                     st.rerun()
+#                 else:
+#                     st.error(f"Error: {result.get('message', 'Unknown error')}")
+
+#     with col2:
+#         # Information panel
+#         st.subheader("Information")
+#         st.markdown("""
+#         ### Tips for better results:
+#         - Be specific in your questions
+#         - Use clear and concise language
+#         - Questions can be in Azerbaijani 
+        
+#         ### About the System:
+#         This assistant uses advanced natural language processing to:
+#         - Search through HR documentation
+#         - Generate accurate, context-aware responses
+#         """)
+
+#         # System status
+#         st.subheader("System Status")
+#         status_placeholder = st.empty()
+#         status_placeholder.success("System is ready")
+
+#         # Clear chat button with confirmation
+#         if st.button("Clear Chat History"):
+#             if st.session_state.chat_history:
+#                 st.session_state.chat_history = []
+#                 st.rerun()
+
+# if __name__ == "__main__":
+#     main()
