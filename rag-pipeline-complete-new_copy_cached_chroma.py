@@ -5161,9 +5161,6 @@ class RAGPipeline:
 
 
 
-
-# # MAIN streamlit (with cached version):
-
 import streamlit as st
 import torch
 import logging
@@ -5176,100 +5173,42 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-
 def log_memory_usage(message: str = ""):
     """Log current memory usage with optional context message"""
     process = psutil.Process()
     memory_info = process.memory_info()
     memory_mb = memory_info.rss / 1024 / 1024
     
-    # Log to both streamlit and logger
     log_message = f"Memory usage{f' ({message})' if message else ''}: {memory_mb:.2f} MB"
     logger.info(log_message)
-    # st.write(log_message)
-
-
-
-# def initialize_rag_pipeline():
-#     """Initialize RAG pipeline with proper error handling and caching"""
-#     try:
-#         # Create cache directories if they don't exist
-#         cache_dir = Path("cache")
-#         cache_dir.mkdir(parents=True, exist_ok=True)
-#         for subdir in ["model", "chunks", "embeddings"]:
-#             (cache_dir / subdir).mkdir(exist_ok=True)
-
-#         st.write("Setting up components...")
-
-#         # Initialize pipeline with caching enabled
-#         pipeline = RAGPipeline(
-#             collection_name="azerbaijan_docs",
-#             embedding_model="text-embedding-3-small",  # OpenAI model
-#             chunk_size=1024,
-#             chunk_overlap=128,
-#             language="az",
-#             cache_dir=str(cache_dir),
-#             batch_size=4  # Smaller batch size for smoother operation
-#         )
-        
-#         st.write("Rag pipeline is setuped")
-
-#         # Process initial document (will use cache if available)
-#         doc_result = pipeline.process_document("formatted_combined.pdf")
-#         if doc_result['status'] != 'success':
-#             st.error(f"Error processing document: {doc_result.get('message', 'Unknown error')}")
-#             return None
-            
-#         return pipeline
-        
-#     except Exception as e:
-#         st.error(f"Failed to initialize pipeline: {str(e)}")
-#         return None
 
 def initialize_rag_pipeline():
     """Initialize RAG pipeline with detailed logging and status updates"""
     try:
-        # Create cache directories with status updates
         cache_dir = Path("cache")
-        # st.write("Creating cache directories...")
         cache_dir.mkdir(parents=True, exist_ok=True)
         for subdir in ["model", "chunks", "embeddings", "vector_store"]:
             (cache_dir / subdir).mkdir(exist_ok=True)
-            # st.write(f"Created cache directory: {subdir}")
 
-        # st.write("Initializing pipeline components...")
         logger.info("Starting pipeline initialization")
         log_memory_usage("Before initialization")
 
-        # HUGGINGFACE_API_KEY = st.secrets['HUGGINGFACE_API_KEY']
-
-        # Initialize components with detailed status updates
         pipeline = RAGPipeline(
             collection_name="azerbaijan_docs",
             embedding_model="text-embedding-3-large",
-            # embedding_model="BAAI/bge-m3", # Local model
             chunk_size=1024,
             chunk_overlap=128,
             language="az",
             cache_dir=str(cache_dir),
             batch_size=4,
-            # api_key=HUGGINGFACE_API_KEY  # Add this line
         )
         
         log_memory_usage("After creating cache directories")
-        # st.write("Pipeline object created successfully")
         logger.info("Pipeline object initialized")
-
-        # Process initial document with progress updates
-        log_memory_usage("After pipeline initialization")
-        # st.write("Processing initial document...")
-        logger.info("Starting document processing")
         
         try:
             doc_result = pipeline.process_document("formatted_combined.pdf")
             log_memory_usage("After document processing")
-            # st.write("Document processing completed")
             logger.info("Document processing finished")
             
             if doc_result['status'] != 'success':
@@ -5295,8 +5234,6 @@ def initialize_rag_pipeline():
         logger.error(error_msg)
         return None
 
-
-
 def process_query(pipeline, query: str) -> Dict[str, Any]:
     """Process a single query through the pipeline"""
     try:
@@ -5307,13 +5244,9 @@ def process_query(pipeline, query: str) -> Dict[str, Any]:
             top_k=3
         )
         
-        # Format the response
         if result['status'] == 'success':
-            # Get the most relevant answer
             response = result.get('summaries', {}).get('abstractive_summary', '')
             context = result.get('summaries', {}).get('relevant_info', '')
-            
-            # Get query variations if available
             variations = result.get('query_variations', [])
             
             return {
@@ -5338,13 +5271,6 @@ def format_chat_message(message: dict) -> None:
         st.markdown(f"🧑‍💼 **You:** {message['content']}")
     else:
         st.markdown(f"🤖 **Assistant:** {message['content']}")
-        # if message.get("variations"):
-        #     with st.expander("Question Variations"):
-        #         for var in message["variations"]:
-        #             st.markdown(f"- {var}")
-        # if message.get("context"):
-        #     with st.expander("View Context"):
-        #         st.markdown(message["context"])
 
 def main():
     # Set up Streamlit page configuration
@@ -5371,7 +5297,27 @@ def main():
         .assistant-message {
             background-color: #e8f0fe;
         }
+        .logo-container {
+            text-align: center;
+            padding: 1rem 0;
+        }
+        .example-qa {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid #e9ecef;
+        }
         </style>
+    """, unsafe_allow_html=True)
+
+    # Display Kapital Bank logo
+    st.markdown("""
+        <div class="logo-container">
+            <img src="https://www.kapitalbank.az/assets/static/img/content/elements/svg/logo-red.svg" 
+                 alt="Kapital Bank Logo" 
+                 style="height: 60px;">
+        </div>
     """, unsafe_allow_html=True)
 
     st.title("HR Assistant")
@@ -5401,6 +5347,19 @@ def main():
                     st.error("Failed to initialize AI model. Please refresh the page.")
                     return
 
+        # Example Q&A Section
+        st.markdown("### Example Questions and Answers")
+        with st.expander("View Example Q&A", expanded=True):
+            st.markdown("""
+            <div class="example-qa">
+                <p><strong>Q: İllik məzuniyyət neçə gündür?</strong></p>
+                <p>A: Əsas illik məzuniyyət müddəti 21 təqvim günüdür. İş stajından və vəzifədən asılı olaraq əlavə məzuniyyət günləri də verilə bilər.</p>
+                
+                <p><strong>Q: Xəstəlik vərəqəsi necə rəsmiləşdirilir?</strong></p>
+                <p>A: Xəstəlik vərəqəsi səhiyyə müəssisəsi tərəfindən verilir və işçi tərəfindən HR departamentinə təqdim edilməlidir. Sənəd 3 iş günü ərzində təqdim edilməlidir.</p>
+            </div>
+            """, unsafe_allow_html=True)
+
         # Chat interface
         st.subheader("Chat")
         
@@ -5418,18 +5377,15 @@ def main():
             submit_button = st.form_submit_button("Send")
 
             if submit_button and query:
-                # Add user message to chat history
                 st.session_state.chat_history.append({
                     "role": "user",
                     "content": query
                 })
 
-                # Process query
                 with st.spinner("Processing your question..."):
                     result = process_query(st.session_state.pipeline, query)
 
                 if result['status'] == 'success':
-                    # Add assistant response to chat history
                     st.session_state.chat_history.append({
                         "role": "assistant",
                         "content": result['response'],
@@ -5437,7 +5393,6 @@ def main():
                         "variations": result.get('variations', [])
                     })
 
-                    # Force streamlit to rerun to update chat history
                     st.rerun()
                 else:
                     st.error(f"Error: {result.get('message', 'Unknown error')}")
@@ -5468,14 +5423,5 @@ def main():
                 st.session_state.chat_history = []
                 st.rerun()
 
-
-
-
-
-
 if __name__ == "__main__":
     main()
-
-
-
-
