@@ -1605,7 +1605,7 @@ import requests
 #         """Cleanup resources"""
 #         pass
 
-
+    
 
 # Add new CachedEmbeddingModel (replaces old version)
 class CachedEmbeddingModel:
@@ -4302,7 +4302,8 @@ class RAGPipeline:
             collection_name: str = "azerbaijan_docs",
             chunk_size: int = 512,
             chunk_overlap: int = 50,
-            embedding_model: str = "text-embedding-3-large",
+            # embedding_model: str = "text-embedding-3-large",
+            embedding_model: str = "text-embedding-3-small",
             # embedding_model: str = "BAAI/bge-m3",
             host: str = "localhost",
             port: int = 19530,
@@ -5247,7 +5248,8 @@ def initialize_rag_pipeline():
         # Initialize components with detailed status updates
         pipeline = RAGPipeline(
             collection_name="azerbaijan_docs",
-            embedding_model="text-embedding-3-large",
+            # embedding_model="text-embedding-3-large",
+            embedding_model="text-embedding-3-small",
             # embedding_model="BAAI/bge-m3", # Local model
             chunk_size=1024,
             chunk_overlap=128,
@@ -5350,7 +5352,7 @@ def format_chat_message(message: dict) -> None:
 def main():
     # Set up Streamlit page configuration
     st.set_page_config(
-        page_title="HR Assistant",
+        page_title="Kapital Bank HR Assistant",
         page_icon="👩‍💼",
         layout="wide",
         initial_sidebar_state="collapsed"
@@ -5396,7 +5398,7 @@ def main():
     # Display Kapital Bank logo using direct image
     # st.image("kb_logo.png", width=300)  # Make sure to have kb_logo.png in your project directory
 
-    st.title("HR Assistant")
+    st.title("Kapital Bank HR Assistant")
     st.markdown("""
     Welcome to the HR Assistant! Ask any questions about HR policies and procedures.
     This system uses advanced AI to provide accurate answers based on official HR documentation.
