@@ -1605,7 +1605,7 @@ import requests
 #         """Cleanup resources"""
 #         pass
 
-    
+
 
 # Add new CachedEmbeddingModel (replaces old version)
 class CachedEmbeddingModel:
@@ -1718,7 +1718,7 @@ class GPTEmbeddingModel:
         # Set embedding dimensions based on model
         self.dimension_map = {
             "text-embedding-3-small": 1536,
-            "text-embedding-3-large": 3072,
+            # "text-embedding-3-large": 3072,
             # "text-embedding-ada-002": 1536  # Legacy model
         }
 
