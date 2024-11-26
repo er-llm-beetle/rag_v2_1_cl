@@ -3596,7 +3596,7 @@ class QuestionGenerator:
             full_prompt,
             return_tensors="pt",
             truncation=True,
-            max_length=3072
+            max_length=1536
         ).to(self.device)
         
         with torch.no_grad():
